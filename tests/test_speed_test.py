@@ -60,9 +60,11 @@ def test_download_once_raises_for_http_errors() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(503, content=b"unavailable", request=request)
 
-    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
-        with pytest.raises(httpx.HTTPStatusError):
-            speed_test.download_once(client, "https://example.com/file.bin")
+    with (
+        httpx.Client(transport=httpx.MockTransport(handler)) as client,
+        pytest.raises(httpx.HTTPStatusError),
+    ):
+        speed_test.download_once(client, "https://example.com/file.bin")
 
 
 def test_summarize_rejects_empty_input() -> None:
