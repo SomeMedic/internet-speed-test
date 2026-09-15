@@ -28,7 +28,11 @@ def test_run_speed_test_performs_exactly_ten_requests() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         nonlocal request_count
         request_count += 1
-        return httpx.Response(200, content=b"x" * 1_000, request=request)
+        return httpx.Response(
+            200,
+            stream=httpx.ByteStream(b"x" * 1_000),
+            request=request,
+        )
 
     output: list[str] = []
     summary = speed_test.run_speed_test(
@@ -47,7 +51,11 @@ def test_download_once_counts_full_body() -> None:
     payload = b"abc123" * 5_000
 
     def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, content=payload, request=request)
+        return httpx.Response(
+            200,
+            stream=httpx.ByteStream(payload),
+            request=request,
+        )
 
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         result = speed_test.download_once(client, "https://example.com/file.bin")
