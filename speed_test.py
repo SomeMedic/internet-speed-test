@@ -84,6 +84,7 @@ def run_speed_test(
         timeout=httpx.Timeout(TIMEOUT_SECONDS),
         headers={"Accept-Encoding": "identity"},
         transport=transport,
+        trust_env=False,
     ) as client:
         for request_number in range(1, REQUEST_COUNT + 1):
             result = download_once(client, url)
